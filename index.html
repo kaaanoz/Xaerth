@@ -1,6 +1,7 @@
 <!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Xaerth</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet"><style>
 
 body{
@@ -11,19 +12,46 @@ text-align:center;
 margin-top:120px;
 }
 
+/* responsive */
+input{
+width:90%;
+max-width:350px;
+}
+
+/* glitch evento */
+.evento{
+animation:glitch 0.3s infinite;
+color:red !important;
+}
+
+@keyframes glitch{
+0%{transform:translate(0);}
+20%{transform:translate(-2px,2px);}
+40%{transform:translate(2px,-2px);}
+60%{transform:translate(-2px,0);}
+80%{transform:translate(2px,2px);}
+100%{transform:translate(0);}
+}
+
+/* mantenimiento */
+#mantenimiento{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100vh;
+background:black;
+color:red;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:40px;
+z-index:9999;
+}
+
 h1{
 font-size:60px;
 letter-spacing:3px;
-}
-
-input{
-padding:12px;
-width:350px;
-border-radius:25px;
-border:none;
-background:#151523;
-color:white;
-font-size:16px;
 }
 
 button{
@@ -41,13 +69,9 @@ display:none;
 margin-top:30px;
 }
 
-.result{
-margin-top:20px;
-color:white;
-}
-
 #sugerencias{
-width:350px;
+width:90%;
+max-width:350px;
 margin:auto;
 background:#151523;
 border-radius:15px;
@@ -64,27 +88,60 @@ color:white;
 background:#7b2cff;
 }
 
-</style></head><body><h1>Xaerth</h1><input id="search" placeholder="Buscar en Xaerth..." oninput="sugerir()">
-<div id="sugerencias"></div><br><button onclick="buscar()">Buscar</button>
+</style></head><body><h1 id="titulo">Xaerth</h1><input id="search" placeholder="Buscar..." oninput="sugerir()">
+<div id="sugerencias"></div><br><button onclick="buscar()" id="btnBuscar">Buscar</button>
 <button onclick="login()">Modo Admin</button>
 
-<div id="resultado" class="result"></div><div id="adminPanel">
-<h2>Panel Admin</h2><input id="titulo" placeholder="Nombre">
+<div id="resultado"></div><div id="adminPanel"><h2>Panel Admin</h2><input id="tituloInput" placeholder="Nombre">
 <br>
 <input id="contenido" placeholder="Contenido">
 <br>
-<button onclick="guardar()">Guardar dato</button></div><script>
+<button onclick="guardar()">Guardar dato</button><hr><h3>Eventos globales</h3><button onclick="activarEvento()">Modo Evento</button>
+<button onclick="activarMantenimiento()">Modo Mantenimiento</button>
+<button onclick="desactivarTodo()">Desactivar</button>
+
+<br><br>
+
+<input id="mensajeGlobal" placeholder="Mensaje global">
+<button onclick="guardarMensaje()">Guardar mensaje</button></div><script>
+
+/* idioma */
+
+let idioma = localStorage.getItem("idioma");
+
+if(!idioma){
+idioma = prompt("Idioma / Language / Idioma: es, en, pt");
+localStorage.setItem("idioma",idioma);
+}
+
+function aplicarIdioma(){
+
+if(idioma==="en"){
+document.getElementById("btnBuscar").innerText="Search";
+document.getElementById("search").placeholder="Search...";
+}
+
+if(idioma==="pt"){
+document.getElementById("btnBuscar").innerText="Buscar";
+document.getElementById("search").placeholder="Pesquisar...";
+}
+
+}
+
+aplicarIdioma();
+
+/* datos */
 
 let datos = JSON.parse(localStorage.getItem("xaerth")) || [];
 
 function guardar(){
-let titulo=document.getElementById("titulo").value;
+let titulo=document.getElementById("tituloInput").value;
 let contenido=document.getElementById("contenido").value;
 
 datos.push({titulo,contenido});
 localStorage.setItem("xaerth",JSON.stringify(datos));
 
-alert("Guardado en Xaerth");
+alert("Guardado");
 }
 
 function buscar(){
@@ -98,7 +155,7 @@ resultado+=`<p><b>${d.titulo}</b>: ${d.contenido}</p>`;
 });
 
 document.getElementById("resultado").innerHTML=
-resultado || "No encontrado en Xaerth";
+resultado || "No encontrado";
 }
 
 function login(){
@@ -112,6 +169,8 @@ alert("Clave incorrecta");
 }
 }
 
+/* sugerencias */
+
 function sugerir(){
 let texto=document.getElementById("search").value.toLowerCase();
 let box=document.getElementById("sugerencias");
@@ -122,7 +181,7 @@ if(texto.startsWith("t")){
 box.innerHTML += `
 <div class="sugerencia"
 onclick="window.location.href='https://whatisme12.github.io/xar/'">
-Traductor Xaerth — https://whatisme12.github.io/xar/
+Traductor Xaerth
 </div>`;
 }
 
@@ -130,11 +189,58 @@ if(texto.startsWith("c") || texto.includes("cal")){
 box.innerHTML += `
 <div class="sugerencia"
 onclick="window.location.href='https://whatisme12.github.io/Calendario/'">
-Calendario Xaerth — https://whatisme12.github.io/Calendario/
+Calendario Xaerth
 </div>`;
 }
 
 }
+
+/* eventos admin */
+
+function activarEvento(){
+localStorage.setItem("modo","evento");
+location.reload();
+}
+
+function activarMantenimiento(){
+localStorage.setItem("modo","mantenimiento");
+location.reload();
+}
+
+function desactivarTodo(){
+localStorage.clear();
+location.reload();
+}
+
+function guardarMensaje(){
+let msg=document.getElementById("mensajeGlobal").value;
+localStorage.setItem("mensaje",msg);
+alert("Mensaje guardado");
+}
+
+/* aplicar eventos */
+
+window.onload=function(){
+
+let modo=localStorage.getItem("modo");
+let mensaje=localStorage.getItem("mensaje");
+
+if(modo==="evento"){
+document.body.classList.add("evento");
+}
+
+if(modo==="mantenimiento"){
+document.body.innerHTML=`<div id="mantenimiento">XAERTH EN MANTENIMIENTO</div>`;
+}
+
+if(mensaje){
+let div=document.createElement("div");
+div.style.marginTop="20px";
+div.innerHTML=mensaje;
+document.body.prepend(div);
+}
+
+};
 
 </script></body>
 </html>
