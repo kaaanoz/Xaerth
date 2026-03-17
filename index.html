@@ -1,4 +1,218 @@
-tamo arreglando la web chavales, la actualización salio fallida
-estamos intentando arreglarlo.
-- SOMOS XAERTH 
-somosxaerth@gmail.com
+<!DOCTYPE html><html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xaerth</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet"><style>
+
+body{
+background:#0b0b12;
+color:#b46cff;
+font-family:'Poppins',sans-serif;
+text-align:center;
+margin-top:120px;
+}
+
+/* reloj */
+#reloj{
+margin-bottom:20px;
+font-size:18px;
+color:white;
+}
+
+/* botón registros */
+#registrosBtn{
+position:fixed;
+top:20px;
+right:20px;
+background:#ff2c2c;
+color:white;
+padding:10px;
+border-radius:15px;
+cursor:pointer;
+display:none;
+z-index:9999;
+}
+
+/* panel registros */
+#panelRegistros{
+display:none;
+position:fixed;
+top:60px;
+right:20px;
+background:#151523;
+padding:15px;
+border-radius:15px;
+width:300px;
+max-height:400px;
+overflow:auto;
+z-index:9999;
+}
+
+/* mantenimiento */
+#mantenimiento{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100vh;
+background:black;
+color:red;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:30px;
+z-index:9998;
+}
+
+input{
+padding:12px;
+width:90%;
+max-width:350px;
+border-radius:25px;
+border:none;
+background:#151523;
+color:white;
+}
+
+button{
+margin:10px;
+padding:10px 20px;
+border:none;
+border-radius:20px;
+background:#7b2cff;
+color:white;
+cursor:pointer;
+}
+
+#adminPanel{
+display:none;
+margin-top:30px;
+}
+
+</style></head><body><div id="reloj"></div><h1>Xaerth</h1><input id="search" placeholder="Buscar..." oninput="sugerir()">
+<br><button onclick="buscar()">Buscar</button>
+<button onclick="login()">Modo Admin</button>
+
+<div id="resultado"></div><!-- botón registros --><div id="registrosBtn" onclick="toggleRegistros()">REGISTROS</div><div id="panelRegistros"></div><div id="adminPanel"><h2>Panel Admin</h2><input id="titulo" placeholder="Nombre">
+<br>
+<input id="contenido" placeholder="Contenido">
+<br>
+<button onclick="guardar()">Guardar dato</button><br><button onclick="activarMantenimiento()">Mantenimiento</button>
+<button onclick="desactivarMantenimiento()">Activar Web</button>
+
+</div><script>
+
+/* RELOJ */
+setInterval(()=>{
+let now = new Date();
+document.getElementById("reloj").innerText =
+now.toLocaleDateString()+" - "+now.toLocaleTimeString();
+},1000);
+
+/* REGISTROS */
+function guardarRegistro(texto){
+let registros = JSON.parse(localStorage.getItem("registros")) || [];
+registros.push(texto);
+localStorage.setItem("registros", JSON.stringify(registros));
+}
+
+function toggleRegistros(){
+let panel=document.getElementById("panelRegistros");
+panel.style.display = panel.style.display==="block"?"none":"block";
+
+let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+panel.innerHTML = "<h3>Historial</h3>";
+
+registros.forEach(r=>{
+panel.innerHTML += "<p>"+r+"</p>";
+});
+}
+
+/* DATOS */
+let datos = JSON.parse(localStorage.getItem("xaerth")) || [];
+
+function guardar(){
+let titulo=document.getElementById("titulo").value;
+let contenido=document.getElementById("contenido").value;
+
+datos.push({titulo,contenido});
+localStorage.setItem("xaerth",JSON.stringify(datos));
+
+guardarRegistro("Dato guardado: "+titulo);
+
+alert("Guardado");
+}
+
+function buscar(){
+let texto=document.getElementById("search").value.toLowerCase();
+let resultado="";
+
+datos.forEach(d=>{
+if(d.titulo.toLowerCase().includes(texto)){
+resultado+=`<p><b>${d.titulo}</b>: ${d.contenido}</p>`;
+}
+});
+
+document.getElementById("resultado").innerHTML=
+resultado || "No encontrado";
+}
+
+/* ADMIN */
+function login(){
+let clave=prompt("Clave Admin:");
+
+if(clave==="2140"){
+document.getElementById("adminPanel").style.display="block";
+document.getElementById("registrosBtn").style.display="block";
+
+guardarRegistro("Admin activado");
+
+}else{
+alert("Clave incorrecta");
+}
+}
+
+/* mantenimiento seguro */
+function activarMantenimiento(){
+localStorage.setItem("modo","mantenimiento");
+guardarRegistro("Modo mantenimiento activado");
+location.reload();
+}
+
+function desactivarMantenimiento(){
+localStorage.removeItem("modo");
+guardarRegistro("Modo mantenimiento desactivado");
+location.reload();
+}
+
+/* aplicar */
+window.onload=function(){
+
+let modo=localStorage.getItem("modo");
+
+if(modo==="mantenimiento"){
+
+let div = document.createElement("div");
+div.id="mantenimiento";
+
+div.innerHTML = `
+XAERTH EN MANTENIMIENTO
+<br><br>
+<button onclick="salirMantenimiento()">Salir</button>
+`;
+
+document.body.appendChild(div);
+
+}
+
+};
+
+function salirMantenimiento(){
+localStorage.removeItem("modo");
+guardarRegistro("Salió del mantenimiento");
+location.reload();
+}
+
+</script></body>
+</html>
