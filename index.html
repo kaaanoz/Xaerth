@@ -2,30 +2,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xaerth</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet"><style>
+<title>Xaerth PRO</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet"><style>
 
 body{
 background:#0b0b12;
 color:#b46cff;
 font-family:'Poppins',sans-serif;
 text-align:center;
-margin-top:120px;
+margin-top:100px;
+transition:0.3s;
 }
 
-/* reloj */
 #reloj{
-margin-bottom:20px;
-font-size:18px;
 color:white;
+margin-bottom:20px;
 }
 
-/* botón registros */
+/* ADMIN FLOAT */
+#adminBtn{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#ff2c2c;
+color:white;
+padding:12px;
+border-radius:20px;
+cursor:pointer;
+z-index:9999;
+}
+
+/* REGISTROS */
 #registrosBtn{
 position:fixed;
 top:20px;
 right:20px;
-background:#ff2c2c;
-color:white;
+background:#7b2cff;
 padding:10px;
 border-radius:15px;
 cursor:pointer;
@@ -33,22 +44,22 @@ display:none;
 z-index:9999;
 }
 
-/* panel registros */
 #panelRegistros{
 display:none;
 position:fixed;
 top:60px;
 right:20px;
-background:#151523;
-padding:15px;
-border-radius:15px;
 width:300px;
 max-height:400px;
 overflow:auto;
+background:#151523;
+padding:15px;
+border-radius:15px;
 z-index:9999;
+color:white;
 }
 
-/* mantenimiento */
+/* MANTENIMIENTO */
 #mantenimiento{
 position:fixed;
 top:0;
@@ -60,28 +71,31 @@ color:red;
 display:flex;
 justify-content:center;
 align-items:center;
+flex-direction:column;
 font-size:30px;
 z-index:9998;
 }
 
+/* INPUTS */
 input{
-padding:12px;
+padding:10px;
 width:90%;
 max-width:350px;
-border-radius:25px;
+border-radius:20px;
 border:none;
 background:#151523;
 color:white;
+margin:5px;
 }
 
 button{
-margin:10px;
 padding:10px 20px;
 border:none;
 border-radius:20px;
 background:#7b2cff;
 color:white;
 cursor:pointer;
+margin:5px;
 }
 
 #adminPanel{
@@ -89,116 +103,133 @@ display:none;
 margin-top:30px;
 }
 
-</style></head><body><div id="reloj"></div><h1>Xaerth</h1><input id="search" placeholder="Buscar..." oninput="sugerir()">
+</style></head><body><div id="reloj"></div><h1>Xaerth</h1><input id="search" placeholder="Buscar en Xaerth..." oninput="sugerir()">
 <br><button onclick="buscar()">Buscar</button>
-<button onclick="login()">Modo Admin</button>
 
-<div id="resultado"></div><!-- botón registros --><div id="registrosBtn" onclick="toggleRegistros()">REGISTROS</div><div id="panelRegistros"></div><div id="adminPanel"><h2>Panel Admin</h2><input id="titulo" placeholder="Nombre">
-<br>
+<div id="resultado"></div><div id="registrosBtn" onclick="toggleRegistros()">REGISTROS</div>
+<div id="panelRegistros"></div><div id="adminBtn" onclick="login()">Admin Mode</div><div id="adminPanel"><h2>Panel Admin</h2><input id="titulo" placeholder="Nombre">
 <input id="contenido" placeholder="Contenido">
-<br>
-<button onclick="guardar()">Guardar dato</button><br><button onclick="activarMantenimiento()">Mantenimiento</button>
+<button onclick="guardar()">Guardar dato</button><br><button onclick="activarMantenimiento()">Modo Mantenimiento</button>
 <button onclick="desactivarMantenimiento()">Activar Web</button>
 
-</div><script>
+<br><input id="colorWeb" placeholder="Color (ej: #ff0000)">
+<button onclick="cambiarColor()">Cambiar Color</button><br><input id="fondoWeb" placeholder="URL imagen fondo">
+<button onclick="cambiarFondo()">Cambiar Fondo</button><br><input id="anuncioTexto" placeholder="Mensaje anuncio">
+<button onclick="crearAnuncio()">Crear Anuncio</button></div><script>
 
 /* RELOJ */
 setInterval(()=>{
-let now = new Date();
+let now=new Date();
 document.getElementById("reloj").innerText =
 now.toLocaleDateString()+" - "+now.toLocaleTimeString();
 },1000);
 
 /* REGISTROS */
-function guardarRegistro(texto){
-let registros = JSON.parse(localStorage.getItem("registros")) || [];
-registros.push(texto);
-localStorage.setItem("registros", JSON.stringify(registros));
+function guardarRegistro(txt){
+let r=JSON.parse(localStorage.getItem("registros"))||[];
+r.push(new Date().toLocaleTimeString()+" - "+txt);
+localStorage.setItem("registros",JSON.stringify(r));
 }
 
 function toggleRegistros(){
 let panel=document.getElementById("panelRegistros");
 panel.style.display = panel.style.display==="block"?"none":"block";
 
-let registros = JSON.parse(localStorage.getItem("registros")) || [];
+let r=JSON.parse(localStorage.getItem("registros"))||[];
 
-panel.innerHTML = "<h3>Historial</h3>";
+panel.innerHTML="<h3>Historial</h3>";
 
-registros.forEach(r=>{
-panel.innerHTML += "<p>"+r+"</p>";
+r.slice().reverse().forEach(x=>{
+panel.innerHTML += "<p>"+x+"</p>";
 });
 }
 
 /* DATOS */
-let datos = JSON.parse(localStorage.getItem("xaerth")) || [];
+let datos=JSON.parse(localStorage.getItem("xaerth"))||[];
 
 function guardar(){
-let titulo=document.getElementById("titulo").value;
-let contenido=document.getElementById("contenido").value;
+let t=document.getElementById("titulo").value;
+let c=document.getElementById("contenido").value;
 
-datos.push({titulo,contenido});
+datos.push({t,c});
 localStorage.setItem("xaerth",JSON.stringify(datos));
 
-guardarRegistro("Dato guardado: "+titulo);
-
+guardarRegistro("Dato: "+t);
 alert("Guardado");
 }
 
+/* BUSCADOR PRO */
 function buscar(){
 let texto=document.getElementById("search").value.toLowerCase();
-let resultado="";
 
+if(texto==="hora"){
+document.getElementById("resultado").innerText=new Date().toLocaleTimeString();
+return;
+}
+
+if(texto==="fecha"){
+document.getElementById("resultado").innerText=new Date().toLocaleDateString();
+return;
+}
+
+if(texto==="youtube"){
+window.open("https://youtube.com");
+return;
+}
+
+if(texto.includes("calendario")){
+window.open("https://whatisme12.github.io/Calendario/");
+return;
+}
+
+let res="";
 datos.forEach(d=>{
-if(d.titulo.toLowerCase().includes(texto)){
-resultado+=`<p><b>${d.titulo}</b>: ${d.contenido}</p>`;
+if(d.t.toLowerCase().includes(texto)){
+res+=`<p><b>${d.t}</b>: ${d.c}</p>`;
 }
 });
 
-document.getElementById("resultado").innerHTML=
-resultado || "No encontrado";
+document.getElementById("resultado").innerHTML = res || "No encontrado";
 }
 
 /* ADMIN */
 function login(){
-let clave=prompt("Clave Admin:");
-
-if(clave==="2140"){
+let c=prompt("Clave Admin:");
+if(c==="2140"){
 document.getElementById("adminPanel").style.display="block";
 document.getElementById("registrosBtn").style.display="block";
-
 guardarRegistro("Admin activado");
-
-}else{
-alert("Clave incorrecta");
-}
+}else alert("Incorrecto");
 }
 
-/* mantenimiento seguro */
+/* MANTENIMIENTO */
 function activarMantenimiento(){
-localStorage.setItem("modo","mantenimiento");
-guardarRegistro("Modo mantenimiento activado");
+localStorage.setItem("modo","on");
+guardarRegistro("Mantenimiento ON");
 location.reload();
 }
 
 function desactivarMantenimiento(){
+let c=prompt("Clave:");
+if(c==="2140"){
 localStorage.removeItem("modo");
-guardarRegistro("Modo mantenimiento desactivado");
+guardarRegistro("Mantenimiento OFF");
 location.reload();
+}else alert("Incorrecto");
 }
 
-/* aplicar */
 window.onload=function(){
 
-let modo=localStorage.getItem("modo");
+if(localStorage.getItem("modo")==="on"){
 
-if(modo==="mantenimiento"){
-
-let div = document.createElement("div");
+let div=document.createElement("div");
 div.id="mantenimiento";
 
-div.innerHTML = `
+div.innerHTML=`
 XAERTH EN MANTENIMIENTO
 <br><br>
+<input id="claveM" placeholder="Contraseña">
+<br>
 <button onclick="salirMantenimiento()">Salir</button>
 `;
 
@@ -206,12 +237,57 @@ document.body.appendChild(div);
 
 }
 
+/* aplicar estilo */
+let color=localStorage.getItem("color");
+if(color) document.body.style.color=color;
+
+let fondo=localStorage.getItem("fondo");
+if(fondo){
+document.body.style.background="url('"+fondo+"') center/cover";
+}
+
 };
 
+/* salir mantenimiento */
 function salirMantenimiento(){
+let c=document.getElementById("claveM").value;
+if(c==="2140"){
 localStorage.removeItem("modo");
-guardarRegistro("Salió del mantenimiento");
+guardarRegistro("Salió mantenimiento");
 location.reload();
+}else alert("Incorrecto");
+}
+
+/* PERSONALIZAR */
+function cambiarColor(){
+let c=document.getElementById("colorWeb").value;
+localStorage.setItem("color",c);
+guardarRegistro("Color cambiado");
+location.reload();
+}
+
+function cambiarFondo(){
+let f=document.getElementById("fondoWeb").value;
+localStorage.setItem("fondo",f);
+guardarRegistro("Fondo cambiado");
+location.reload();
+}
+
+/* ANUNCIOS */
+function crearAnuncio(){
+let txt=document.getElementById("anuncioTexto").value;
+
+let div=document.createElement("div");
+div.style.position="fixed";
+div.style.bottom="0";
+div.style.width="100%";
+div.style.background="red";
+div.style.color="white";
+div.innerText=txt;
+
+document.body.appendChild(div);
+
+guardarRegistro("Anuncio: "+txt);
 }
 
 </script></body>
