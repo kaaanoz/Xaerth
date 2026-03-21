@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xaerth PRO</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500&display=swap" rel="stylesheet">
 
 <style>
@@ -16,12 +23,6 @@ color: var(--texto);
 font-family:'Inter',sans-serif;
 text-align:center;
 margin-top:100px;
-transition:0.3s;
-}
-
-#reloj{
-color: var(--verde);
-margin-bottom:20px;
 }
 
 /* TITULO */
@@ -30,7 +31,13 @@ color: var(--verde);
 text-shadow: 0 0 10px rgba(0,255,156,0.5);
 }
 
-/* INPUT BUSCADOR PRO */
+/* RELOJ */
+#reloj{
+color: var(--verde);
+margin-bottom:20px;
+}
+
+/* INPUT BUSCADOR */
 input{
 padding:12px;
 width:90%;
@@ -134,3 +141,119 @@ z-index:9998;
 }
 
 </style>
+</head>
+
+<body>
+
+<div id="reloj"></div>
+<h1>Xaerth</h1>
+
+<input id="search" placeholder="Buscar en Xaerth..." oninput="sugerir()">
+<br>
+<button onclick="buscar()">Buscar</button>
+
+<div id="resultado"></div>
+
+<div id="registrosBtn" onclick="toggleRegistros()">REGISTROS</div>
+<div id="panelRegistros"></div>
+
+<div id="adminBtn" onclick="login()">Admin</div>
+
+<div id="adminPanel" style="display:none; margin-top:30px;">
+<h2>Panel Admin</h2>
+
+<input id="titulo" placeholder="Nombre">
+<input id="contenido" placeholder="Contenido">
+<button onclick="guardar()">Guardar dato</button>
+
+<br>
+
+<button onclick="activarMantenimiento()">Modo Mantenimiento</button>
+<button onclick="desactivarMantenimiento()">Activar Web</button>
+
+</div>
+
+<script>
+
+/* RELOJ */
+setInterval(()=>{
+let now=new Date();
+document.getElementById("reloj").innerText =
+now.toLocaleDateString()+" - "+now.toLocaleTimeString();
+},1000);
+
+/* REGISTROS */
+function guardarRegistro(txt){
+let r=JSON.parse(localStorage.getItem("registros"))||[];
+r.push(new Date().toLocaleTimeString()+" - "+txt);
+localStorage.setItem("registros",JSON.stringify(r));
+}
+
+function toggleRegistros(){
+let panel=document.getElementById("panelRegistros");
+panel.style.display = panel.style.display==="block"?"none":"block";
+
+let r=JSON.parse(localStorage.getItem("registros"))||[];
+panel.innerHTML="<h3>Historial</h3>";
+
+r.slice().reverse().forEach(x=>{
+panel.innerHTML += "<p>"+x+"</p>";
+});
+}
+
+/* DATOS */
+let datos=JSON.parse(localStorage.getItem("xaerth"))||[];
+
+function guardar(){
+let t=document.getElementById("titulo").value;
+let c=document.getElementById("contenido").value;
+
+datos.push({t,c});
+localStorage.setItem("xaerth",JSON.stringify(datos));
+
+guardarRegistro("Dato: "+t);
+alert("Guardado");
+}
+
+/* BUSCADOR */
+function buscar(){
+let texto=document.getElementById("search").value.toLowerCase();
+
+if(texto==="hora"){
+document.getElementById("resultado").innerText=new Date().toLocaleTimeString();
+return;
+}
+
+if(texto==="fecha"){
+document.getElementById("resultado").innerText=new Date().toLocaleDateString();
+return;
+}
+
+if(texto==="youtube"){
+window.open("https://youtube.com");
+return;
+}
+
+let res="";
+datos.forEach(d=>{
+if(d.t.toLowerCase().includes(texto)){
+res+=`<p><b>${d.t}</b>: ${d.c}</p>`;
+}
+});
+
+document.getElementById("resultado").innerHTML = res || "No encontrado";
+}
+
+/* ADMIN */
+function login(){
+let c=prompt("Clave Admin:");
+if(c==="2140"){
+document.getElementById("adminPanel").style.display="block";
+document.getElementById("registrosBtn").style.display="block";
+}else alert("Incorrecto");
+}
+
+</script>
+
+</body>
+</html>
