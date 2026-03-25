@@ -1,1 +1,249 @@
-ñ
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xaerth</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--fondo:#0b0f0c;
+--verde:#00ff9c;
+--texto:#d8ffe9;
+}
+
+body{
+background:var(--fondo);
+color:var(--texto);
+font-family:'Inter',sans-serif;
+text-align:center;
+margin:0;
+overflow:hidden;
+}
+
+/* PANTALLA INICIO */
+#inicio{
+position:fixed;
+width:100%;
+height:100vh;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+animation:fadeOut 3s forwards;
+}
+
+@keyframes fadeOut{
+0%{opacity:1;}
+80%{opacity:1;}
+100%{opacity:0; visibility:hidden;}
+}
+
+#inicio h1{
+color:var(--verde);
+font-size:40px;
+animation:glitch 1s infinite;
+}
+
+@keyframes glitch{
+0%{transform:translate(0);}
+25%{transform:translate(2px,-2px);}
+50%{transform:translate(-2px,2px);}
+75%{transform:translate(2px,2px);}
+100%{transform:translate(0);}
+}
+
+/* CONTENIDO */
+#app{
+padding-top:100px;
+}
+
+h1{
+color:var(--verde);
+}
+
+input{
+padding:12px;
+width:90%;
+max-width:400px;
+border-radius:20px;
+border:1px solid rgba(0,255,156,0.3);
+background:transparent;
+color:var(--texto);
+}
+
+button{
+margin:10px;
+padding:10px 20px;
+border-radius:20px;
+background:transparent;
+border:1px solid var(--verde);
+color:var(--verde);
+cursor:pointer;
+}
+
+/* RESULTADO */
+#resultado{
+margin-top:20px;
+}
+
+/* ADAPTATIVO */
+@media(max-width:600px){
+h1{font-size:24px;}
+}
+
+/* MODO OCULTO */
+.glitch{
+animation:glitch 0.2s infinite;
+color:red !important;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ANIMACION INICIO -->
+<div id="inicio">
+<h1>XAERTH SYSTEM</h1>
+<p id="cargando"></p>
+</div>
+
+<div id="app">
+
+<h1 id="titulo">Xaerth</h1>
+
+<input id="search" placeholder="Buscar..." oninput="sugerir()">
+<br>
+<button onclick="buscar()">Entrar</button>
+
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+/* IDIOMA */
+let idioma = navigator.language;
+
+if(idioma.startsWith("es")){
+document.getElementById("search").placeholder="Buscar en Xaerth...";
+}else{
+document.getElementById("search").placeholder="Search in Xaerth...";
+}
+
+/* TEXTO CARGANDO */
+let textos = ["Iniciando sistema...", "Cargando módulos...", "Acceso concedido..."];
+let i=0;
+
+let intervalo=setInterval(()=>{
+document.getElementById("cargando").innerText=textos[i];
+i++;
+if(i>=textos.length) clearInterval(intervalo);
+},800);
+
+/* SUGERENCIAS */
+function sugerir(){
+let t=search.value.toLowerCase();
+let r=resultado;
+r.innerHTML="";
+
+if(t.startsWith("c")){
+r.innerHTML+=`<p onclick="usar('calculadora')">Calculadora</p>`;
+r.innerHTML+=`<p onclick="usar('créditos')">Créditos</p>`;
+}
+
+if(t.startsWith("s")){
+r.innerHTML+=`<p onclick="usar('servicio')">Servicio</p>`;
+}
+
+if(t.startsWith("m")){
+r.innerHTML+=`<p onclick="usar('modo secreto')">Modo secreto</p>`;
+}
+}
+
+/* USAR */
+function usar(x){
+search.value=x;
+buscar();
+}
+
+/* BUSCAR */
+function buscar(){
+let t=search.value.toLowerCase();
+let r=resultado;
+
+/* CALCULADORA */
+if(t.includes("calculadora")){
+r.innerHTML=`
+<input id="calc" placeholder="2+2">
+<button onclick="calc()">=</button>
+<div id="res"></div>
+`;
+return;
+}
+
+/* SERVICIO */
+if(t.includes("servicio")){
+r.innerHTML="📧 somosxaerth@gmail.com";
+return;
+}
+
+/* CREDITOS */
+if(t.includes("créditos")||t.includes("creditos")){
+r.innerHTML=`
+<h2>Creadores</h2>
+<p>- Lucas</p>
+<p>- 👁️</p>
+<p>XAERTH es un sistema independiente creado para explorar ideas.</p>
+`;
+return;
+}
+
+/* MODO SECRETO 😈 */
+if(t.includes("modo secreto")){
+document.body.classList.add("glitch");
+r.innerHTML="Acceso oculto activado...";
+return;
+}
+
+/* RESPUESTA INTELIGENTE */
+if(t.includes("hola")){
+r.innerHTML="Hola usuario 👁️";
+return;
+}
+
+/* RANDOM */
+let respuestas=[
+"XAERTH está procesando...",
+"No se encontró información.",
+"Intento registrado..."
+];
+
+r.innerHTML=respuestas[Math.floor(Math.random()*respuestas.length)];
+}
+
+/* CALCULADORA */
+function calc(){
+let v=document.getElementById("calc").value;
+try{
+document.getElementById("res").innerText=eval(v);
+}catch{
+document.getElementById("res").innerText="Error";
+}
+}
+
+/* SORPRESA 😈 */
+document.addEventListener("keydown", e=>{
+if(e.key==="x"){
+alert("XAERTH te está observando 👁️");
+}
+});
+
+</script>
+
+</body>
+  </html>
