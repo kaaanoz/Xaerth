@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,50 +9,99 @@
 
 <style>
 :root{
---fondo:#0b0f0c;
 --verde:#00ff9c;
+--fondo:#0b0f0c;
 --texto:#d8ffe9;
 }
 
 body{
 margin:0;
+font-family:'Inter',sans-serif;
 background:var(--fondo);
 color:var(--texto);
-font-family:'Inter',sans-serif;
 text-align:center;
+overflow-x:hidden;
 }
 
-/* RESPONSIVE */
-h1{font-size:clamp(22px,5vw,40px); color:var(--verde);}
+/* ☁️ NUBES */
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03), transparent 40%);
+animation:moverNubes 40s linear infinite;
+z-index:-1;
+}
 
-input,button{
-width:clamp(200px,80%,400px);
-margin:5px;
+@keyframes moverNubes{
+0%{transform:translate(0,0);}
+100%{transform:translate(-200px,-200px);}
+}
+
+/* HEADER */
+#top{
+display:flex;
+justify-content:space-between;
 padding:10px;
-border-radius:15px;
+font-size:14px;
+opacity:0.8;
+}
+
+/* TITULO */
+h1{
+color:var(--verde);
+font-size:clamp(24px,5vw,40px);
+margin-bottom:5px;
+}
+
+/* LEMA */
+.lema{
+font-size:13px;
+opacity:0.7;
+color:var(--verde);
+}
+
+/* INPUT */
+input{
+width:clamp(200px,80%,400px);
+padding:10px;
+border-radius:20px;
 border:1px solid var(--verde);
 background:transparent;
 color:var(--texto);
 }
 
-/* ADMIN BTN */
-#panelBtn{
-position:fixed;
-bottom:15px;
-right:15px;
+/* BOTONES */
+button{
+margin:5px;
+padding:10px;
+border-radius:20px;
+border:1px solid var(--verde);
+background:transparent;
+color:var(--verde);
+cursor:pointer;
+transition:0.2s;
 }
 
-/* REG PANEL */
-#regPanel{
-display:none;
-position:fixed;
-top:10px;
-right:10px;
-width:300px;
-max-height:300px;
-overflow:auto;
+button:hover{
+background:rgba(0,255,156,0.1);
+}
+
+/* PANEL ADMIN */
+.adminBtn{
+display:block;
+width:90%;
+margin:8px auto;
+}
+
+/* BOTON PELIGRO */
+.peligro{
 background:black;
-padding:10px;
+border:1px solid red;
+color:red;
+font-weight:bold;
 }
 
 /* MANTENIMIENTO */
@@ -67,29 +116,44 @@ justify-content:center;
 align-items:center;
 }
 
-/* CREDITOS */
-#creditos h2{
-font-family:'Orbitron';
-color:var(--verde);
-text-shadow:0 0 10px var(--verde);
+/* RESULTADO */
+#resultado{
+margin-top:20px;
+padding:10px;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+input,button{width:90%;}
 }
 </style>
 </head>
 
 <body>
 
+<div id="top">
+<div id="fecha"></div>
+</div>
+
 <h1>XAERTH</h1>
+<p class="lema">Aquí la inteligencia humana y la artificial dejan de ser distintas.</p>
 
 <input id="search" placeholder="Buscar..." oninput="sugerir()">
+<br>
 <button onclick="buscar()">Entrar</button>
+<button onclick="actualizaciones()">ACTUALIZACIONES FUTURAS</button>
 
 <div id="resultado"></div>
 
-<button id="panelBtn" onclick="login()">PANEL</button>
-
-<div id="regPanel"></div>
+<button onclick="login()">PANEL</button>
 
 <script>
+
+/* FECHA */
+setInterval(()=>{
+let now=new Date();
+fecha.innerText=now.toLocaleString();
+},1000);
 
 /* REGISTROS */
 function guardarRegistro(txt){
@@ -110,7 +174,6 @@ document.body.innerHTML=`
 
 function salir(){
 let c=clave.value;
-
 if(c==="2140"||c==="QUITAR MANTENIMIENTO"){
 localStorage.removeItem("mant");
 location.reload();
@@ -120,73 +183,84 @@ location.reload();
 /* ADMIN */
 function login(){
 let c=prompt("Clave:");
-if(c==="2140"){
 
+if(c==="2140"){
 resultado.innerHTML=`
 <h2>PANEL ADMIN</h2>
 
-<button onclick="activarMant()">🛑 Activar Mantenimiento</button>
-<button onclick="desactivarMant()">✅ Desactivar Mantenimiento</button>
+<button class="adminBtn" onclick="activarMant()">🛑 Activar mantenimiento</button>
+<button class="adminBtn" onclick="desactivarMant()">✅ Desactivar mantenimiento</button>
 
-<br><button onclick="verReg()">📊 REGISTROS</button>
+<button class="adminBtn" onclick="verReg()">📊 Ver registros</button>
 
-<br><input id="color"><button onclick="colorWeb()">🎨 Color</button>
-<br><input id="fondo"><button onclick="fondoWeb()">🖼 Fondo</button>
-<br><input id="fuente"><button onclick="fuenteWeb()">🔤 Fuente</button>
+<input id="color"><button class="adminBtn" onclick="cambiarColor()">🎨 Color</button>
+<input id="fondo"><button class="adminBtn" onclick="cambiarFondo()">🖼 Fondo</button>
+<input id="fuente"><button class="adminBtn" onclick="cambiarFuente()">🔤 Fuente</button>
 
-<br><input id="mensaje"><button onclick="mensajeWeb()">📢 Anuncio</button>
+<input id="mensaje"><button class="adminBtn" onclick="mensajeGlobal()">📢 Mensaje global</button>
 
-<br><button onclick="modoFocus()">🎯 Modo Focus</button>
-<br><button onclick="reset()">♻️ Reset Web</button>
+<button class="adminBtn peligro" onclick="reiniciar()">⚠️ REINICIAR TODA LA WEB</button>
 `;
 
 guardarRegistro("Admin activado");
-
 }else alert("Incorrecto");
 }
 
 /* ADMIN FUNCIONES */
 function activarMant(){
 localStorage.setItem("mant","on");
-location.reload();
 }
 
 function desactivarMant(){
 localStorage.removeItem("mant");
-location.reload();
+alert("Mantenimiento desactivado");
 }
 
 function verReg(){
 let r=JSON.parse(localStorage.getItem("reg"))||[];
-regPanel.style.display="block";
-regPanel.innerHTML="<h3>REGISTROS</h3>";
-r.slice().reverse().forEach(x=>regPanel.innerHTML+="<p>"+x+"</p>");
+resultado.innerHTML="<h3>REGISTROS</h3>";
+r.slice().reverse().forEach(x=>resultado.innerHTML+="<p>"+x+"</p>");
 }
 
-function colorWeb(){
+function cambiarColor(){
 document.body.style.color=color.value;
 }
 
-function fondoWeb(){
+function cambiarFondo(){
 document.body.style.background="url("+fondo.value+") center/cover";
 }
 
-function fuenteWeb(){
+function cambiarFuente(){
 document.body.style.fontFamily=fuente.value;
 }
 
-function mensajeWeb(){
-alert(mensaje.value);
+function mensajeGlobal(){
+localStorage.setItem("msg",mensaje.value);
+alert("Mensaje guardado");
 }
 
-function modoFocus(){
-document.body.style.background="black";
-resultado.innerHTML="Modo enfoque activado";
+/* MOSTRAR MENSAJE GLOBAL */
+if(localStorage.getItem("msg")){
+alert(localStorage.getItem("msg"));
 }
 
-function reset(){
+/* REINICIAR */
+function reiniciar(){
+let c=prompt("Clave reinicio:");
+if(c==="2014"){
 localStorage.clear();
 location.reload();
+}else alert("Incorrecto");
+}
+
+/* ACTUALIZACIONES */
+function actualizaciones(){
+resultado.innerHTML=`
+<h2>PRONTO LES CONTAREMOS QUÉ ES LO QUE SE APROXIMA EN XAERTH 🤫</h2>
+<br><br>
+<h3>XAERTH</h3>
+<p>somosxaerth@gmail.com</p>
+`;
 }
 
 /* SUGERENCIAS */
@@ -198,14 +272,6 @@ if(t.startsWith("c")){
 resultado.innerHTML+=`<p onclick="usar('calendario')">Calendario</p>`;
 resultado.innerHTML+=`<p onclick="usar('calculadora')">Calculadora</p>`;
 resultado.innerHTML+=`<p onclick="usar('creditos')">Créditos</p>`;
-}
-
-if(t.startsWith("t")){
-resultado.innerHTML+=`<p onclick="usar('traductor')">Traductor</p>`;
-}
-
-if(t.startsWith("r")){
-resultado.innerHTML+=`<p onclick="usar('limites')">LÍMITES</p>`;
 }
 }
 
@@ -221,8 +287,7 @@ guardarRegistro(t);
 
 /* CALENDARIO */
 if(t.includes("calendario")){
-let d=new Date();
-resultado.innerHTML="<h2>Calendario</h2>"+d.toLocaleDateString();
+resultado.innerHTML=new Date().toLocaleDateString();
 return;
 }
 
@@ -232,39 +297,16 @@ resultado.innerHTML=`<input id="calc"><button onclick="calc()">=</button><div id
 return;
 }
 
-/* TRADUCTOR SIMPLE */
-if(t.includes("traductor")){
-resultado.innerHTML=`<input id="txt"><button onclick="trad()">Traducir</button><div id="res"></div>`;
-return;
-}
-
-function trad(){
-res.innerText=txt.value.split("").reverse().join("");
-}
-
 /* CREDITOS */
 if(t.includes("creditos")){
 resultado.innerHTML=`
-<div id="creditos">
 <p>Página web creada por: LUCAS ☁️, El 👁️</p>
-<p>Queremos crear un navegador independiente...</p>
-<h2>SOMOS XAERTH</h2>
-</div>`;
-return;
-}
+<p>En esta web queremos crear un navegador independiente, crear límites pero también libertad...</p>
 
-/* LIMITES */
-if(t.includes("limites")){
-resultado.innerHTML=`<h2>ESTABLECER LIMITES</h2><div id="contador"></div>`;
-setInterval(()=>{
-let f=new Date("March 26 2026 19:40:00").getTime();
-let n=new Date().getTime();
-let d=f-n;
-let h=Math.floor(d/3600000);
-let m=Math.floor((d%3600000)/60000);
-let s=Math.floor((d%60000)/1000);
-contador.innerText=h+"h "+m+"m "+s+"s";
-},1000);
+<h2 style="font-family:Orbitron;color:#00ff9c;">XAERTH</h2>
+<p>"Aquí la inteligencia humana y la artificial dejan de ser distintas."</p>
+<p>somosxaerth@gmail.com</p>
+`;
 return;
 }
 
