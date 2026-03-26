@@ -15,18 +15,19 @@
 }
 
 body{
+margin:0;
 background:var(--fondo);
 color:var(--texto);
 font-family:'Inter',sans-serif;
 text-align:center;
-margin:0;
 }
 
-/* TITULO */
-h1{color:var(--verde);}
+/* RESPONSIVE */
+h1{font-size:clamp(22px,5vw,40px); color:var(--verde);}
 
-/* INPUT */
-input{
+input,button{
+width:clamp(200px,80%,400px);
+margin:5px;
 padding:10px;
 border-radius:15px;
 border:1px solid var(--verde);
@@ -34,40 +35,24 @@ background:transparent;
 color:var(--texto);
 }
 
-/* BOTONES */
-button{
-margin:5px;
-padding:8px 15px;
-border-radius:15px;
-background:transparent;
-border:1px solid var(--verde);
-color:var(--verde);
-}
-
-/* ADMIN */
+/* ADMIN BTN */
 #panelBtn{
 position:fixed;
-bottom:20px;
-right:20px;
+bottom:15px;
+right:15px;
 }
 
-/* REGISTROS */
-#regBtn{
-position:fixed;
-top:10px;
-right:10px;
-display:none;
-}
-
+/* REG PANEL */
 #regPanel{
 display:none;
 position:fixed;
-top:50px;
+top:10px;
 right:10px;
-background:black;
-padding:10px;
+width:300px;
 max-height:300px;
 overflow:auto;
+background:black;
+padding:10px;
 }
 
 /* MANTENIMIENTO */
@@ -76,12 +61,10 @@ position:fixed;
 width:100%;
 height:100vh;
 background:black;
-color:var(--verde);
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-font-size:25px;
 }
 
 /* CREDITOS */
@@ -103,15 +86,10 @@ text-shadow:0 0 10px var(--verde);
 <div id="resultado"></div>
 
 <button id="panelBtn" onclick="login()">PANEL</button>
-<button id="regBtn" onclick="toggleReg()">REGISTROS</button>
+
 <div id="regPanel"></div>
 
 <script>
-
-/* IDIOMA */
-if(!navigator.language.startsWith("es")){
-search.placeholder="Search...";
-}
 
 /* REGISTROS */
 function guardarRegistro(txt){
@@ -120,27 +98,20 @@ r.push(new Date().toLocaleString()+" - "+txt);
 localStorage.setItem("reg",JSON.stringify(r));
 }
 
-function toggleReg(){
-let p=regPanel;
-p.style.display=p.style.display==="block"?"none":"block";
-let r=JSON.parse(localStorage.getItem("reg"))||[];
-p.innerHTML="<h3>REGISTROS</h3>";
-r.slice().reverse().forEach(x=>p.innerHTML+="<p>"+x+"</p>");
-}
-
 /* MANTENIMIENTO */
 if(localStorage.getItem("mant")=="on"){
 document.body.innerHTML=`
 <div id="mantenimiento">
-XAERTH EN MANTENIMIENTO
-<br><br>
-<input id="clave" placeholder="ACCESO">
+<h2>XAERTH EN MANTENIMIENTO</h2>
+<input id="clave">
 <button onclick="salir()">Entrar</button>
 </div>`;
 }
 
 function salir(){
-if(document.getElementById("clave").value==="2140"){
+let c=clave.value;
+
+if(c==="2140"||c==="QUITAR MANTENIMIENTO"){
 localStorage.removeItem("mant");
 location.reload();
 }else alert("Incorrecto");
@@ -150,48 +121,72 @@ location.reload();
 function login(){
 let c=prompt("Clave:");
 if(c==="2140"){
-regBtn.style.display="block";
+
 resultado.innerHTML=`
-<h2>Panel Admin</h2>
+<h2>PANEL ADMIN</h2>
 
-<button onclick="mant()">Mantenimiento</button>
+<button onclick="activarMant()">🛑 Activar Mantenimiento</button>
+<button onclick="desactivarMant()">✅ Desactivar Mantenimiento</button>
 
-<br><input id="color" placeholder="Color">
-<button onclick="cambiarColor()">Aplicar</button>
+<br><button onclick="verReg()">📊 REGISTROS</button>
 
-<br><input id="fondo" placeholder="URL Fondo">
-<button onclick="cambiarFondo()">Aplicar</button>
+<br><input id="color"><button onclick="colorWeb()">🎨 Color</button>
+<br><input id="fondo"><button onclick="fondoWeb()">🖼 Fondo</button>
+<br><input id="fuente"><button onclick="fuenteWeb()">🔤 Fuente</button>
 
-<br><input id="mensaje" placeholder="Mensaje global">
-<button onclick="mensaje()">Enviar</button>
+<br><input id="mensaje"><button onclick="mensajeWeb()">📢 Anuncio</button>
 
-<br><input id="fuente" placeholder="Fuente (ej: serif)">
-<button onclick="cambiarFuente()">Aplicar</button>
+<br><button onclick="modoFocus()">🎯 Modo Focus</button>
+<br><button onclick="reset()">♻️ Reset Web</button>
 `;
-guardarRegistro("Admin entró");
+
+guardarRegistro("Admin activado");
+
 }else alert("Incorrecto");
 }
 
-/* FUNCIONES ADMIN */
-function mant(){
+/* ADMIN FUNCIONES */
+function activarMant(){
 localStorage.setItem("mant","on");
 location.reload();
 }
 
-function cambiarColor(){
+function desactivarMant(){
+localStorage.removeItem("mant");
+location.reload();
+}
+
+function verReg(){
+let r=JSON.parse(localStorage.getItem("reg"))||[];
+regPanel.style.display="block";
+regPanel.innerHTML="<h3>REGISTROS</h3>";
+r.slice().reverse().forEach(x=>regPanel.innerHTML+="<p>"+x+"</p>");
+}
+
+function colorWeb(){
 document.body.style.color=color.value;
 }
 
-function cambiarFondo(){
+function fondoWeb(){
 document.body.style.background="url("+fondo.value+") center/cover";
 }
 
-function mensaje(){
+function fuenteWeb(){
+document.body.style.fontFamily=fuente.value;
+}
+
+function mensajeWeb(){
 alert(mensaje.value);
 }
 
-function cambiarFuente(){
-document.body.style.fontFamily=fuente.value;
+function modoFocus(){
+document.body.style.background="black";
+resultado.innerHTML="Modo enfoque activado";
+}
+
+function reset(){
+localStorage.clear();
+location.reload();
 }
 
 /* SUGERENCIAS */
@@ -200,6 +195,7 @@ let t=search.value.toLowerCase();
 resultado.innerHTML="";
 
 if(t.startsWith("c")){
+resultado.innerHTML+=`<p onclick="usar('calendario')">Calendario</p>`;
 resultado.innerHTML+=`<p onclick="usar('calculadora')">Calculadora</p>`;
 resultado.innerHTML+=`<p onclick="usar('creditos')">Créditos</p>`;
 }
@@ -209,11 +205,10 @@ resultado.innerHTML+=`<p onclick="usar('traductor')">Traductor</p>`;
 }
 
 if(t.startsWith("r")){
-resultado.innerHTML+=`<p onclick="usar('limites')">LIMITES</p>`;
+resultado.innerHTML+=`<p onclick="usar('limites')">LÍMITES</p>`;
 }
 }
 
-/* USAR */
 function usar(x){
 search.value=x;
 buscar();
@@ -223,6 +218,13 @@ buscar();
 function buscar(){
 let t=search.value.toLowerCase();
 guardarRegistro(t);
+
+/* CALENDARIO */
+if(t.includes("calendario")){
+let d=new Date();
+resultado.innerHTML="<h2>Calendario</h2>"+d.toLocaleDateString();
+return;
+}
 
 /* CALCULADORA */
 if(t.includes("calculadora")){
@@ -236,47 +238,26 @@ resultado.innerHTML=`<input id="txt"><button onclick="trad()">Traducir</button><
 return;
 }
 
-/* TRADUCIR */
 function trad(){
 res.innerText=txt.value.split("").reverse().join("");
 }
 
 /* CREDITOS */
-if(t.includes("creditos") || t.includes("créditos")){
+if(t.includes("creditos")){
 resultado.innerHTML=`
 <div id="creditos">
-
-<p style="font-size:18px;">
-Página web creada por: <b>LUCAS ☁️</b>, El 👁️
-</p>
-
-<p style="max-width:600px; margin:auto; line-height:1.6; opacity:0.9;">
-En esta web queremos crear un navegador independiente, crear límites pero también libertad,
-empezar de 0, explorar la IA, utilizar la inteligencia humana y artificial, observar y mantener todos los registros,
-saber que es lo que hacen ellos/as, queremos mirar, administrar, jugar, pero también queremos límites y libertad,
-queremos aprender, y utilizar Inteligencia Artificial tanto como humana, crear planes, y crear un futuro.
-</p>
-
-<h2 style="
-margin-top:30px;
-font-family:'Orbitron',sans-serif;
-color:#00ff9c;
-text-shadow:0 0 15px rgba(0,255,156,0.7);
-letter-spacing:3px;
-">
-SOMOS XAERTH
-</h2>
-
-</div>
-`;
+<p>Página web creada por: LUCAS ☁️, El 👁️</p>
+<p>Queremos crear un navegador independiente...</p>
+<h2>SOMOS XAERTH</h2>
+</div>`;
 return;
-  }
+}
 
 /* LIMITES */
 if(t.includes("limites")){
-resultado.innerHTML=`<h2>PROXIMAMENTE</h2><div id="contador"></div>`;
+resultado.innerHTML=`<h2>ESTABLECER LIMITES</h2><div id="contador"></div>`;
 setInterval(()=>{
-let f=new Date("March 25 2026 19:57:00").getTime();
+let f=new Date("March 26 2026 19:40:00").getTime();
 let n=new Date().getTime();
 let d=f-n;
 let h=Math.floor(d/3600000);
