@@ -1,327 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XAERTH</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XAERTH</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    body {
+      background: black;
+      color: red;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
 
-<style>
-:root{
---verde:#00ff9c;
---fondo:#0b0f0c;
---texto:#d8ffe9;
-}
+    h1 {
+      position: absolute;
+      top: 20px;
+      font-size: 2.5rem;
+      letter-spacing: 5px;
+    }
 
-body{
-margin:0;
-font-family:'Inter',sans-serif;
-background:var(--fondo);
-color:var(--texto);
-text-align:center;
-}
+    #countdown {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
 
-/* ☁️ nubes */
-body::before{
-content:"";
-position:fixed;
-width:200%;
-height:200%;
-background:radial-gradient(circle,rgba(255,255,255,0.03),transparent 40%);
-animation:nubes 60s linear infinite;
-z-index:-1;
-}
-@keyframes nubes{
-100%{transform:translate(-200px,-200px);}
-}
-
-/* header */
-#top{
-display:flex;
-justify-content:flex-end;
-padding:10px;
-font-size:13px;
-opacity:0.7;
-}
-
-/* lema */
-.lema{color:var(--verde);font-size:13px;opacity:0.7}
-
-/* input */
-input{
-width:clamp(220px,80%,420px);
-padding:12px;
-border-radius:20px;
-border:1px solid var(--verde);
-background:transparent;
-color:white;
-}
-
-/* botones */
-button{
-margin:6px;
-padding:10px;
-border-radius:20px;
-border:1px solid var(--verde);
-background:transparent;
-color:var(--verde);
-cursor:pointer;
-}
-
-/* sugerencias */
-#resultado p{
-cursor:pointer;
-padding:8px;
-border-bottom:1px solid rgba(0,255,156,0.2);
-}
-
-#resultado p:hover{
-background:rgba(0,255,156,0.1);
-}
-
-.peligro{
-border:1px solid red;
-color:red;
-}
-
-/* mantenimiento */
-#mantenimiento{
-position:fixed;
-width:100%;
-height:100vh;
-background:black;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-}
-</style>
+    p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+  </style>
 </head>
-
 <body>
 
-<div id="top"><div id="fecha"></div></div>
+  <h1>XAERTH</h1>
 
-<h1>XAERTH</h1>
-<p class="lema">Aquí la inteligencia humana y la artificial dejan de ser distintas.</p>
-<p style="opacity:0.6;">somosxaerth@gmail.com</p>
+  <div id="countdown">Cargando...</div>
 
-<input id="search" placeholder="Buscar..." oninput="sugerir()">
-<br>
-<button onclick="buscar()">Entrar</button>
-<button onclick="actualizaciones()">ACTUALIZACIONES FUTURAS</button>
+  <p>¿Qué pasará?.</p>
 
-<div id="resultado"></div>
+  <script>
+    const targetDate = new Date("April 1, 2026 18:35:00 GMT-3").getTime();
 
-<button onclick="login()">PANEL</button>
+    const countdown = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
 
-<script>
+      if (distance < 0) {
+        clearInterval(countdown);
+        document.getElementById("countdown").innerHTML = "00:00:00";
+        return;
+      }
 
-/* reloj */
-setInterval(()=>{
-document.getElementById("fecha").innerText=new Date().toLocaleString();
-},1000);
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
 
-/* mantenimiento */
-if(localStorage.getItem("mant")=="on"){
-document.body.innerHTML=`
-<div id="mantenimiento">
-<h2>XAERTH EN MANTENIMIENTO</h2>
-<input id="clave">
-<button onclick="salir()">Entrar</button>
-</div>`;
-}
-
-/* salir mantenimiento */
-function salir(){
-let c=document.getElementById("clave").value;
-if(c==="2140"||c==="QUITAR MANTENIMIENTO"){
-localStorage.removeItem("mant");
-location.reload();
-}else alert("Denegado");
-}
-
-/* registros */
-function guardarRegistro(t){
-let r=JSON.parse(localStorage.getItem("reg"))||[];
-r.push(new Date().toLocaleString()+" - "+t);
-localStorage.setItem("reg",JSON.stringify(r));
-}
-
-/* ENTER */
-document.getElementById("search").addEventListener("keypress",e=>{
-if(e.key==="Enter") buscar();
-});
-
-/* sugerencias */
-function sugerir(){
-let t=search.value.toLowerCase();
-resultado.innerHTML="";
-
-if(t.startsWith("t")){
-resultado.innerHTML+=`<p onclick="usar('traductor xaerth')">🌐 Traductor XAERTH</p>`;
-resultado.innerHTML+=`<p onclick="window.open('https://vantoralfabeto.my.canva.site/xaerthinformacion/')">🔗 Traductor Oficial</p>`;
-}
-
-if(t.startsWith("c")){
-resultado.innerHTML+=`<p onclick="usar('calendario')">📅 Calendario</p>`;
-resultado.innerHTML+=`<p onclick="usar('calculadora')">🧮 Calculadora</p>`;
-resultado.innerHTML+=`<p onclick="usar('creditos')">👁️ Créditos</p>`;
-}
-
-if(t.startsWith("l")){
-resultado.innerHTML+=`<p onclick="usar('limites')">⚠️ Límites</p>`;
-}
-
-if(t.startsWith("s")){
-resultado.innerHTML+=`<p onclick="usar('servicio')">📧 Servicio</p>`;
-}
-}
-
-function usar(x){
-search.value=x;
-buscar();
-}
-
-/* contador global */
-let contadorActivo=null;
-
-/* buscar */
-function buscar(){
-let t=search.value.toLowerCase();
-guardarRegistro(t);
-
-resultado.innerHTML="<p style='opacity:0.5'>Procesando...</p>";
-
-/* traductor */
-if(t.includes("traductor")){
-resultado.innerHTML=`
-<input id="txt" placeholder="Texto">
-<button onclick="trad()">Convertir</button>
-<div id="res"></div>
-`;
-return;
-}
-
-/* calendario */
-if(t.includes("calendario")){
-resultado.innerHTML=new Date().toLocaleDateString();
-return;
-}
-
-/* calculadora */
-if(t.includes("calculadora")){
-resultado.innerHTML=`<input id="calc"><button onclick="calc()">=</button><div id="res"></div>`;
-return;
-}
-
-/* limites */
-if(t.includes("limites")){
-if(contadorActivo) clearInterval(contadorActivo);
-
-resultado.innerHTML=`
-<h2>ESTABLECER LIMITES</h2>
-<p>• Uso controlado</p>
-<p>• Registro activo</p>
-<p>• Restricciones dinámicas</p>
-<div id="contador"></div>
-`;
-
-contadorActivo=setInterval(()=>{
-let f=new Date("March 26 2026 19:40:00").getTime();
-let n=new Date().getTime();
-let d=f-n;
-
-let h=Math.floor(d/3600000);
-let m=Math.floor((d%3600000)/60000);
-let s=Math.floor((d%60000)/1000);
-
-document.getElementById("contador").innerText=h+"h "+m+"m "+s+"s";
-},1000);
-
-return;
-}
-
-/* creditos */
-if(t.includes("creditos")){
-resultado.innerHTML=`
-<p>Página web creada por: LUCAS ☁️, El 👁️</p>
-<h2 style="font-family:Orbitron;color:#00ff9c;">XAERTH</h2>
-<p>"Aquí la inteligencia humana y la artificial dejan de ser distintas."</p>
-<p>somosxaerth@gmail.com</p>
-`;
-return;
-}
-
-/* servicio */
-if(t.includes("servicio")){
-resultado.innerHTML="📧 somosxaerth@gmail.com";
-return;
-}
-
-resultado.innerHTML="XAERTH procesando...";
-}
-
-/* trad */
-function trad(){
-let txt=document.getElementById("txt").value;
-document.getElementById("res").innerText=
-txt.split("").reverse().join("")+" ⟷ XAERTH";
-}
-
-/* calc */
-function calc(){
-try{
-document.getElementById("res").innerText=
-Function("return "+document.getElementById("calc").value)();
-}catch{
-document.getElementById("res").innerText="Error";
-}
-}
-
-/* admin */
-function login(){
-let c=prompt("Clave:");
-if(c==="2140"){
-resultado.innerHTML=`
-<h2>PANEL ADMIN</h2>
-
-<button onclick="localStorage.setItem('mant','on')">Activar mantenimiento</button>
-<button onclick="localStorage.removeItem('mant')">Desactivar mantenimiento</button>
-
-<button onclick="verReg()">Registros</button>
-
-<p style="opacity:0.5">(Color y fuente no disponible)</p>
-
-<button class="peligro" onclick="reset()">REINICIAR TODO</button>
-`;
-}
-}
-
-function verReg(){
-let r=JSON.parse(localStorage.getItem("reg"))||[];
-resultado.innerHTML=r.join("<br>");
-}
-
-function reset(){
-let c=prompt("Clave:");
-if(c==="2014"){
-localStorage.clear();
-location.reload();
-}
-}
-
-/* actualizaciones */
-function actualizaciones(){
-resultado.innerHTML=`
-<h2>PRONTO LES CONTAREMOS LO QUE SE VIENE 🤫</h2>
-<p>XAERTH</p>
-<p>somosxaerth@gmail.com</p>
-`;
-}
-
-</script>
+      document.getElementById("countdown").innerHTML =
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }, 1000);
+  </script>
 
 </body>
 </html>
