@@ -1,75 +1,68 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XAERTH</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XAERTH</title>
+<style>
+body{
+  margin:0;
+  background:#0d0d0d;
+  color:#e5e5e5;
+  font-family:Arial, Helvetica, sans-serif;
+}.container{ display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; }
 
-    body {
-      background: black;
-      color: red;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
+.folders{ display:flex; gap:40px; }
 
-    h1 {
-      position: absolute;
-      top: 20px;
-      font-size: 2.5rem;
-      letter-spacing: 5px;
-    }
+.folder{ width:140px; height:100px; border:1px solid #444; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; }
 
-    #countdown {
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
+.folder:hover{ background:#1a1a1a; }
 
-    p {
-      font-size: 1.2rem;
-      opacity: 0.8;
-    }
-  </style>
+.hidden{ display:none; }
+
+.text-box{ max-width:600px; text-align:left; line-height:1.6; }
+
+button{ margin-top:20px; padding:10px 20px; background:none; border:1px solid #888; color:#fff; cursor:pointer; animation:blink 1s infinite; }
+
+@keyframes blink{ 50%{opacity:0.3;} }
+
+.loading{ font-size:1.2rem; }
+
+</style>
 </head>
-<body>
+<body><div class="container" id="main">
+  <div class="folders">
+    <div class="folder" onclick="openImportante()">Importante</div>
+    <div class="folder" onclick="openCodigo()">Código Xaerth</div>
+  </div>
+</div><div class="container hidden" id="importante">
+  <div class="text-box">
+    <p>XAERTH nunca se fue, Xaerth es una especie de ciclo, siempre que sales, vuelves, siempre que se reinicia, vuelve, aveces normal, aveces contador, pensar en un fin, y seguir normal.</p><p>Xaerth no tiene mucho tiempo, por lo mismo no lo vamos a terminar ahora. Xaerth sigue observando movimientos en la sombra sin hablar, advertir. Espera el mejor momento para el ataque final.</p>
 
-  <h1>XAERTH</h1>
+<button onclick="startLoading()">Continuar</button>
 
-  <div id="countdown">Cargando...</div>
+  </div>
+</div><div class="container hidden" id="loading">
+  <div class="loading">
+    <p>BIENVENIDO A XAERTH</p>
+    <p>Reiniciando web, por favor espera...</p>
+  </div>
+</div><script>
+function openImportante(){
+  document.getElementById('main').classList.add('hidden');
+  document.getElementById('importante').classList.remove('hidden');
+}
 
-  <p>¿Qué pasará?.</p>
+function openCodigo(){
+  alert('Acceso restringido');
+}
 
-  <script>
-    const targetDate = new Date("April 1, 2026 18:35:00 GMT-3").getTime();
+function startLoading(){
+  document.getElementById('importante').classList.add('hidden');
+  document.getElementById('loading').classList.remove('hidden');
 
-    const countdown = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-
-      if (distance < 0) {
-        clearInterval(countdown);
-        document.getElementById("countdown").innerHTML = "00:00:00";
-        return;
-      }
-
-      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((distance / (1000 * 60)) % 60);
-      const seconds = Math.floor((distance / 1000) % 60);
-
-      document.getElementById("countdown").innerHTML =
-        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }, 1000);
-  </script>
-
-</body>
+  setTimeout(()=>{
+    location.reload();
+  },4000);
+}
+</script></body>
 </html>
