@@ -3,139 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xaerth</title>
+<title>XAERTH</title>
 
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background: #fff;
-  }
+:root{
+--verde:#00ff9c;
+--fondo:#0b0f0c;
+--texto:#d8ffe9;
+}
 
-  .search {
-    width: 70%;
-    max-width: 500px;
-    padding: 14px;
-    font-size: 18px;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    text-align: center;
-    outline: none;
-  }
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:var(--fondo);
+color:var(--texto);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
 
-  .buttons {
-    margin-top: 20px;
-  }
+#info{
+position:fixed;
+top:10px;
+left:10px;
+font-size:11px;
+opacity:0.4;
+max-width:280px;
+}
 
-  button {
-    padding: 10px 22px;
-    border: none;
-    border-radius: 10px;
-    margin: 5px;
-    cursor: pointer;
-  }
+#titulo{
+font-size:32px;
+color:var(--verde);
+margin-bottom:10px;
+}
 
-  .hidden {
-    filter: blur(6px);
-    opacity: 0.4;
-  }
+#carpeta{
+padding:14px 20px;
+border:1px solid var(--verde);
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+color:var(--verde);
+animation:blink 1s infinite;
+}
 
-  /* PÁ */
-  #page-pa {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-    background: #111;
-    color: white;
-    text-align: center;
-  }
+@keyframes blink{
+0%,50%{opacity:1;}
+51%,100%{opacity:0.25;}
+}
 
-  #timer {
-    font-size: 40px;
-    margin-bottom: 20px;
-  }
+#panel{
+display:none;
+margin-top:20px;
+text-align:center;
+}
 
-  #openBtn {
-    display: none;
-    width: 100%;
-    height: 100vh;
-    font-size: 50px;
-    border: none;
-    cursor: pointer;
-  }
+#textoVideo{
+font-size:13px;
+opacity:0.85;
+margin-bottom:10px;
+}
+
+#contador{
+font-size:22px;
+margin:10px;
+}
+
+#link{
+display:none;
+margin-top:15px;
+}
+
+#link a{
+color:var(--verde);
+text-decoration:none;
+border:1px solid var(--verde);
+padding:10px 15px;
+border-radius:10px;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- INICIO -->
-<div id="home">
+<div id="info"></div>
 
-  <input class="search"
-  placeholder="Buscar en Xaerth..."
-  onclick="this.value='NO DISPONIBLE :('">
+<div id="titulo">XAERTH</div>
 
-  <div class="buttons">
-    <button class="hidden">????</button>
-    <button onclick="openPa()">PÁ</button>
-  </div>
+<div id="carpeta" onclick="abrir()">Para: PAPÁ</div>
 
+<div id="panel">
+
+<div id="textoVideo">🎥 Hay un vídeo que se desbloqueará en:</div>
+
+<div id="contador"></div>
+
+<div id="link">
+<a href="https://drive.google.com/drive/folders/1LrCRhJeaz-eEYGim3b9ujXQnBJOJamf0" target="_blank">
+ABRIR
+</a>
 </div>
-
-<!-- PÁ -->
-<div id="page-pa">
-
-  <div id="timer">Cargando...</div>
-
-  <button id="openBtn"
-  onclick="location.href='https://drive.google.com/drive/folders/1LrCRhJeaz-eEYGim3b9ujXQnBJOJamf0'">
-  ABRIR
-  </button>
 
 </div>
 
 <script>
 
-function openPa() {
-  document.getElementById("home").style.display = "none";
-  document.getElementById("page-pa").style.display = "flex";
-  startCountdown();
+/* 🕒 reloj esquina Santiago */
+function actualizarInfo(){
+document.getElementById("info").innerText =
+"📅 " + new Date().toLocaleString("es-CL", {
+timeZone:"America/Santiago",
+year:"numeric",
+month:"2-digit",
+day:"2-digit",
+hour:"2-digit",
+minute:"2-digit",
+second:"2-digit"
+});
 }
+setInterval(actualizarInfo,1000);
+actualizarInfo();
 
-/* 🔥 Hora corregida (más estable que string con GMT) */
-let target = new Date(2026, 5, 21, 21, 5, 0).getTime();
+/* 🎯 TARGET FIJO 01:00 AM (HOY O MAÑANA SI YA PASÓ) */
+function getTarget(){
+  const now = new Date();
+  const target = new Date(now);
+  target.setHours(1,0,0,0);
 
-function startCountdown() {
-
-  function update() {
-    let now = new Date().getTime();
-    let distance = target - now;
-
-    if (distance <= 0) {
-      document.getElementById("timer").style.display = "none";
-      document.getElementById("openBtn").style.display = "block";
-      clearInterval(interval);
-      return;
-    }
-
-    let hours = Math.floor(distance / (1000 * 60 * 60));
-    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("timer").innerHTML =
-      hours + "h " + minutes + "m " + seconds + "s";
+  if(now.getTime() > target.getTime()){
+    target.setDate(target.getDate() + 1);
   }
 
-  update();
-  let interval = setInterval(update, 1000);
+  return target.getTime();
+}
+
+let target = getTarget();
+let intervalo = null;
+
+function abrir(){
+
+document.getElementById("panel").style.display="block";
+
+if(intervalo) return;
+
+intervalo = setInterval(()=>{
+
+let now = Date.now();
+let diff = target - now;
+
+if(diff <= 0){
+document.getElementById("contador").style.display="none";
+document.getElementById("textoVideo").style.display="none";
+document.getElementById("link").style.display="block";
+clearInterval(intervalo);
+return;
+}
+
+let h = Math.floor(diff/3600000);
+let m = Math.floor((diff%3600000)/60000);
+let s = Math.floor((diff%60000)/1000);
+
+document.getElementById("contador").innerText =
+`${h}h ${m}m ${s}s`;
+
+},1000);
 }
 
 </script>
