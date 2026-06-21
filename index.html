@@ -127,17 +127,23 @@ second:"2-digit"
 setInterval(actualizarInfo,1000);
 actualizarInfo();
 
-/* 🎯 TARGET FIJO 01:00 AM (HOY O MAÑANA SI YA PASÓ) */
+/* 🔓 estado permanente */
+function yaDesbloqueado(){
+return localStorage.getItem("xaerth_unlocked") === "true";
+}
+
+/* 🎯 01:04 AM */
 function getTarget(){
-  const now = new Date();
-  const target = new Date(now);
-  target.setHours(1,0,0,0);
+const now = new Date();
+const t = new Date(now);
 
-  if(now.getTime() > target.getTime()){
-    target.setDate(target.getDate() + 1);
-  }
+t.setHours(1,4,0,0); // 👈 CAMBIO A 01:04
 
-  return target.getTime();
+if(now.getTime() > t.getTime()){
+t.setDate(t.getDate() + 1);
+}
+
+return t.getTime();
 }
 
 let target = getTarget();
@@ -147,6 +153,14 @@ function abrir(){
 
 document.getElementById("panel").style.display="block";
 
+/* si ya desbloqueado */
+if(yaDesbloqueado()){
+document.getElementById("contador").style.display="none";
+document.getElementById("textoVideo").style.display="none";
+document.getElementById("link").style.display="block";
+return;
+}
+
 if(intervalo) return;
 
 intervalo = setInterval(()=>{
@@ -155,9 +169,13 @@ let now = Date.now();
 let diff = target - now;
 
 if(diff <= 0){
+
+localStorage.setItem("xaerth_unlocked","true");
+
 document.getElementById("contador").style.display="none";
 document.getElementById("textoVideo").style.display="none";
 document.getElementById("link").style.display="block";
+
 clearInterval(intervalo);
 return;
 }
