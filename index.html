@@ -7,80 +7,56 @@
 
 <style>
 :root{
---verde:#00ff9c;
---fondo:#0b0f0c;
---texto:#d8ffe9;
+--xaerth:#00ff9c;
+--bg:#0b0f0c;
+--text:#d8ffe9;
 }
 
 body{
 margin:0;
 font-family:Arial, sans-serif;
-background:var(--fondo);
-color:var(--texto);
-height:100vh;
+background:var(--bg);
+color:var(--text);
 display:flex;
 justify-content:center;
 align-items:center;
+height:100vh;
 flex-direction:column;
-}
-
-#info{
-position:fixed;
-top:10px;
-left:10px;
-font-size:11px;
-opacity:0.4;
-max-width:280px;
-}
-
-#titulo{
-font-size:32px;
-color:var(--verde);
-margin-bottom:10px;
-}
-
-#carpeta{
-padding:14px 20px;
-border:1px solid var(--verde);
-border-radius:12px;
-cursor:pointer;
-font-weight:bold;
-color:var(--verde);
-animation:blink 1s infinite;
-}
-
-@keyframes blink{
-0%,50%{opacity:1;}
-51%,100%{opacity:0.25;}
-}
-
-#panel{
-display:none;
-margin-top:20px;
 text-align:center;
 }
 
-#textoVideo{
-font-size:13px;
-opacity:0.85;
+/* título */
+#titulo{
+font-size:32px;
+color:var(--xaerth);
 margin-bottom:10px;
 }
 
+/* texto bloqueado */
+#estado{
+font-size:14px;
+opacity:0.8;
+margin-bottom:10px;
+}
+
+/* contador */
 #contador{
-font-size:22px;
+font-size:28px;
+color:var(--xaerth);
 margin:10px;
 }
 
+/* botón link */
 #link{
 display:none;
-margin-top:15px;
+margin-top:20px;
 }
 
 #link a{
-color:var(--verde);
+color:var(--xaerth);
 text-decoration:none;
-border:1px solid var(--verde);
-padding:10px 15px;
+border:1px solid var(--xaerth);
+padding:12px 18px;
 border-radius:10px;
 }
 
@@ -89,15 +65,9 @@ border-radius:10px;
 
 <body>
 
-<div id="info"></div>
-
 <div id="titulo">XAERTH</div>
 
-<div id="carpeta" onclick="abrir()">Para: PAPÁ</div>
-
-<div id="panel">
-
-<div id="textoVideo">🎥 Hay un vídeo que se desbloqueará en:</div>
+<div id="estado">🎁⌛</div>
 
 <div id="contador"></div>
 
@@ -107,76 +77,32 @@ ABRIR
 </a>
 </div>
 
-</div>
-
 <script>
 
-/* 🕒 reloj esquina Santiago */
-function actualizarInfo(){
-document.getElementById("info").innerText =
-"📅 " + new Date().toLocaleString("es-CL", {
-timeZone:"America/Santiago",
-year:"numeric",
-month:"2-digit",
-day:"2-digit",
-hour:"2-digit",
-minute:"2-digit",
-second:"2-digit"
-});
-}
-setInterval(actualizarInfo,1000);
-actualizarInfo();
-
-/* 🔓 estado permanente */
-function yaDesbloqueado(){
-return localStorage.getItem("xaerth_unlocked") === "true";
-}
-
-/* 🎯 01:04 AM */
+/* 🎯 21 JUNIO 20:55 (hora local del navegador / Chile si está en Chile) */
 function getTarget(){
-const now = new Date();
-const t = new Date(now);
-
-t.setHours(1,4,0,0); // 👈 CAMBIO A 01:04
-
-if(now.getTime() > t.getTime()){
-t.setDate(t.getDate() + 1);
-}
-
-return t.getTime();
+  const now = new Date();
+  const target = new Date(2026, 5, 21, 20, 55, 0); 
+  return target.getTime();
 }
 
 let target = getTarget();
-let intervalo = null;
+let unlocked = false;
 
-function abrir(){
+function update(){
 
-document.getElementById("panel").style.display="block";
-
-/* si ya desbloqueado */
-if(yaDesbloqueado()){
-document.getElementById("contador").style.display="none";
-document.getElementById("textoVideo").style.display="none";
-document.getElementById("link").style.display="block";
-return;
-}
-
-if(intervalo) return;
-
-intervalo = setInterval(()=>{
-
-let now = Date.now();
-let diff = target - now;
+const now = Date.now();
+const diff = target - now;
 
 if(diff <= 0){
 
-localStorage.setItem("xaerth_unlocked","true");
-
+if(!unlocked){
 document.getElementById("contador").style.display="none";
-document.getElementById("textoVideo").style.display="none";
+document.getElementById("estado").innerText="🎉 DESBLOQUEADO";
 document.getElementById("link").style.display="block";
+unlocked = true;
+}
 
-clearInterval(intervalo);
 return;
 }
 
@@ -187,8 +113,10 @@ let s = Math.floor((diff%60000)/1000);
 document.getElementById("contador").innerText =
 `${h}h ${m}m ${s}s`;
 
-},1000);
 }
+
+setInterval(update,1000);
+update();
 
 </script>
 
