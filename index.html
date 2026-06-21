@@ -1,40 +1,144 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XAERTH</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xaerth</title>
 
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-      flex-direction: column;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: #fff;
+  }
 
-    .codigo {
-      font-size: 2rem;
-      letter-spacing: 3px;
-      margin-bottom: 15px;
-    }
+  .search {
+    width: 70%;
+    max-width: 500px;
+    padding: 14px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    text-align: center;
+    outline: none;
+  }
 
-    .estado {
-      font-size: 1.2rem;
-      color: #00ff00;
-    }
-  </style>
+  .buttons {
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    margin: 5px;
+    cursor: pointer;
+  }
+
+  .hidden {
+    filter: blur(6px);
+    opacity: 0.4;
+  }
+
+  /* PÁ */
+  #page-pa {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background: #111;
+    color: white;
+    text-align: center;
+  }
+
+  #timer {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+
+  #openBtn {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    font-size: 50px;
+    border: none;
+    cursor: pointer;
+  }
+</style>
 </head>
+
 <body>
 
-  <div class="codigo">P. A 0001</div>
-  <div class="estado">Completado</div>
+<!-- INICIO -->
+<div id="home">
+
+  <input class="search"
+  placeholder="Buscar en Xaerth..."
+  onclick="this.value='NO DISPONIBLE :('">
+
+  <div class="buttons">
+    <button class="hidden">????</button>
+    <button onclick="openPa()">PÁ</button>
+  </div>
+
+</div>
+
+<!-- PÁ -->
+<div id="page-pa">
+
+  <div id="timer">Cargando...</div>
+
+  <button id="openBtn"
+  onclick="location.href='https://drive.google.com/drive/folders/1LrCRhJeaz-eEYGim3b9ujXQnBJOJamf0'">
+  ABRIR
+  </button>
+
+</div>
+
+<script>
+
+function openPa() {
+  document.getElementById("home").style.display = "none";
+  document.getElementById("page-pa").style.display = "flex";
+  startCountdown();
+}
+
+/* 🔥 Hora corregida (más estable que string con GMT) */
+let target = new Date(2026, 5, 21, 21, 5, 0).getTime();
+
+function startCountdown() {
+
+  function update() {
+    let now = new Date().getTime();
+    let distance = target - now;
+
+    if (distance <= 0) {
+      document.getElementById("timer").style.display = "none";
+      document.getElementById("openBtn").style.display = "block";
+      clearInterval(interval);
+      return;
+    }
+
+    let hours = Math.floor(distance / (1000 * 60 * 60));
+    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("timer").innerHTML =
+      hours + "h " + minutes + "m " + seconds + "s";
+  }
+
+  update();
+  let interval = setInterval(update, 1000);
+}
+
+</script>
 
 </body>
 </html>
