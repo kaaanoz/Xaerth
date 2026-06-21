@@ -1,124 +1,111 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XAERTH</title>
-
-<style>
-:root{
---xaerth:#00ff9c;
---bg:#0b0f0c;
---text:#d8ffe9;
-}
-
+<title>XAERTH</title><style>
 body{
 margin:0;
-font-family:Arial, sans-serif;
-background:var(--bg);
-color:var(--text);
+font-family:Arial,sans-serif;
+background:#0b0f0c;
+color:#d8ffe9;
+height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
 flex-direction:column;
-text-align:center;
 }
 
-/* título */
 #titulo{
-font-size:32px;
-color:var(--xaerth);
-margin-bottom:10px;
+font-size:40px;
+color:#00ff9c;
+margin-bottom:20px;
 }
 
-/* texto bloqueado */
-#estado{
-font-size:14px;
-opacity:0.8;
-margin-bottom:10px;
-}
-
-/* contador */
-#contador{
-font-size:28px;
-color:var(--xaerth);
-margin:10px;
-}
-
-/* botón link */
-#link{
-display:none;
-margin-top:20px;
-}
-
-#link a{
-color:var(--xaerth);
-text-decoration:none;
-border:1px solid var(--xaerth);
-padding:12px 18px;
+button{
+padding:12px 20px;
+border:1px solid #00ff9c;
+background:transparent;
+color:#00ff9c;
 border-radius:10px;
+cursor:pointer;
 }
 
-</style>
-</head>
+#registrosBtn{
+position:fixed;
+top:10px;
+right:10px;
+}
 
-<body>
+#listaRegistros{
+display:none;
+position:fixed;
+top:50px;
+right:10px;
+background:#111;
+border:1px solid #00ff9c;
+padding:10px;
+max-width:250px;
+max-height:300px;
+overflow:auto;
+}
+</style></head>
+<body><button id="registrosBtn" onclick="verRegistros()">REGISTROS</button>
 
-<div id="titulo">XAERTH</div>
-
-<div id="estado">🎁⌛</div>
-
-<div id="contador"></div>
-
-<div id="link">
-<a href="https://drive.google.com/drive/folders/1LrCRhJeaz-eEYGim3b9ujXQnBJOJamf0" target="_blank">
-ABRIR
-</a>
-</div>
+<div id="listaRegistros"></div><div id="titulo">XAERTH</div><button onclick="ingresarNombre()">Escriba su nombre</button>
 
 <script>
 
-/* 🎯 21 JUNIO 20:55 (hora local del navegador / Chile si está en Chile) */
-function getTarget(){
-  const now = new Date();
-  const target = new Date(2026, 5, 21, 20, 55, 0); 
-  return target.getTime();
-}
+function ingresarNombre(){
 
-let target = getTarget();
-let unlocked = false;
+const nombre = prompt("Ingrese su nombre:");
 
-function update(){
-
-const now = Date.now();
-const diff = target - now;
-
-if(diff <= 0){
-
-if(!unlocked){
-document.getElementById("contador").style.display="none";
-document.getElementById("estado").innerText="🎉 DESBLOQUEADO";
-document.getElementById("link").style.display="block";
-unlocked = true;
-}
-
+if(!nombre || nombre.trim()===""){
 return;
 }
 
-let h = Math.floor(diff/3600000);
-let m = Math.floor((diff%3600000)/60000);
-let s = Math.floor((diff%60000)/1000);
+let registros = JSON.parse(localStorage.getItem("xaerth_registros")) || [];
 
-document.getElementById("contador").innerText =
-`${h}h ${m}m ${s}s`;
+registros.push({
+nombre:nombre,
+fecha:new Date().toLocaleString()
+});
 
+localStorage.setItem(
+"xaerth_registros",
+JSON.stringify(registros)
+);
+
+/* Redirigir */
+window.location.href =
+"https://drive.google.com/drive/folders/1LrCRhJeaz-eEYGim3b9ujXQnBJOJamf0";
 }
 
-setInterval(update,1000);
-update();
+function verRegistros(){
 
-</script>
+const caja=document.getElementById("listaRegistros");
 
-</body>
+let registros =
+JSON.parse(localStorage.getItem("xaerth_registros")) || [];
+
+if(caja.style.display==="block"){
+caja.style.display="none";
+return;
+}
+
+if(registros.length===0){
+caja.innerHTML="Sin registros.";
+}else{
+
+caja.innerHTML="<b>Registros</b><hr>";
+
+registros.forEach(r=>{
+caja.innerHTML +=
+`${r.nombre}<br><small>${r.fecha}</small><hr>`;
+});
+}
+
+caja.style.display="block";
+}
+
+</script></body>
 </html>
