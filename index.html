@@ -1,1 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Notas</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0b0d;
+      color: #e8e8e8;
+      font-family: Inter, Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* BARRA SUPERIOR */
+
+    .topbar {
+      height: 64px;
+      background: #111114;
+      border-bottom: 1px solid #242428;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #1c1c21;
+      border: 1px solid #303036;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #77777f;
+      letter-spacing: 0.3px;
+    }
+
+    /* CONTENIDO */
+
+    .container {
+      flex: 1;
+      padding: 28px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .editor {
+      width: 100%;
+      max-width: 1050px;
+      height: 100%;
+      background: #111114;
+      border: 1px solid #242428;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.35);
+    }
+
+    .editor-header {
+      height: 45px;
+      border-bottom: 1px solid #242428;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      color: #77777f;
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #55555c;
+      margin-right: 9px;
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      background: #111114;
+      color: #e5e5e7;
+      padding: 25px;
+      font-family: "Courier New", monospace;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    textarea::placeholder {
+      color: #4e4e55;
+    }
+
+    textarea:focus {
+      background: #121216;
+    }
+
+    /* BARRA INFERIOR */
+
+    .bottom {
+      height: 38px;
+      border-top: 1px solid #242428;
+      background: #0f0f12;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: #66666d;
+      font-size: 11px;
+    }
+
+    .warning {
+      color: #77777f;
+    }
+
+    @media (max-width: 600px) {
+
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .container {
+        padding: 14px;
+      }
+
+      .editor {
+        border-radius: 10px;
+      }
+
+      textarea {
+        padding: 18px;
+        font-size: 14px;
+      }
+
+      .status {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <div class="title">
+      <div class="icon">✎</div>
+      <span>Notas</span>
+    </div>
+
+    <div class="status">
+      Sesión temporal
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="editor">
+
+      <div class="editor-header">
+        <div class="dot"></div>
+        documento.txt
+      </div>
+
+      <textarea
+        placeholder="Empieza a escribir..."
+        spellcheck="false"
+      ></textarea>
+
+    </div>
+
+  </main>
+
+
+  <footer class="bottom">
+
+    <span>Bloc de notas</span>
+
+    <span class="warning">
+      No se guardan los cambios
+    </span>
+
+  </footer>
+
+</body>
+</html>
